@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+@section Scripts
+{
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(() => {
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44397/MyHub").build();
+
+        $("#conStatus").text(connection.connectionState);
+
+        connection.start().then(() => {
+            $("#conStatus").text(connection.connectionState);
+            console.log(connection.connectionState + " start fonsiyonu başarılı");
+        }).catch((err) => { console.log(err);
+            console.log(connection.connectionState +" start fonksiyonundan gelen hata");
+        });
+        //click methodları
+        $("#btnSave").click(() => {
+            connection.invoke("SendName", $("#txtName").val()).catch((err) =>
+                console.log(err))
+        })
+        //on methodları
+        connection.on("ReceiveName", (name) => {
+            $("#namesList").append(`<li class="list-group-item">${name}</li>`)
+        });
+
+        connection.on("ReceiveClientCount", (clientCount) => {
+                $("#clientCount").text(clientCount);
+                console.log(clientCount);
+            });
+
+    })
+</script>
+}
+
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <input type="text" class="form-control" id="txtName" />
+        <hr />
+        <button class="btn btn-warning" id="btnSave">Yeni Kişi Ekle</button>
+        <div class="alert alert-info mt-2">
+            <div class="float-start">
+                Bağlantı Durumu : <strong id="conStatus"></strong>
+                İstemci Sayısı  : <strong id="clientCount"></strong>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <div class="col-lg-6 offset-lg-3">
+        <ul class="list-group" id="namesList">
+        </ul>
+    </div>
+</div>
