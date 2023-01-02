@@ -17,6 +17,7 @@
 
         connection.start().then(() => {
             $("#conStatus").text(connection.connectionState);
+            connection.invoke("GetNames");
             console.log(connection.connectionState + " start fonsiyonu başarılı");
         }).catch((err) => { console.log(err);
             console.log(connection.connectionState +" start fonksiyonundan gelen hata");
@@ -35,6 +36,14 @@
                 $("#clientCount").text(clientCount);
                 console.log(clientCount);
             });
+
+        connection.on("ReceiveNames", (names) => {
+                $("#namesList").empty();
+                names.forEach((item, index) => {
+                    $("#namesList").append(`<li class="list-group-item">${item} </li>`)
+                })
+            })
+
 
     })
 </script>
